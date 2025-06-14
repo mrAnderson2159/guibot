@@ -5,6 +5,16 @@ from src.logger import get_logger
 logger = get_logger(__name__)
 
 def esc_exit(key, callback: callable = lambda: None, *args, **kwargs) -> bool:
+    """
+    Check if the pressed key is 'esc' and call the callback function if it is.
+
+    :param key: The key that was pressed.
+    :param callback: Function to call when 'esc' is pressed.
+    :param args: Additional arguments to pass to the callback function.
+    :param kwargs: Additional keyword arguments to pass to the callback function.
+    :return: True if the key is not 'esc', False otherwise.
+    If False is returned, the listener will stop. Else, it will continue listening.
+    """
     if key == Key.esc:
         callback(*args, **kwargs)
         logger.info("Exiting with 'esc' keystroke.")
