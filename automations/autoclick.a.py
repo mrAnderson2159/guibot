@@ -1,9 +1,9 @@
-from src.mouse_controller import MouseController
+from src.mouse_controller import MouseController as mc
 from src.automation import Automation
 
 def autoclick():
-    MouseController.click()
-    MouseController.wait(1)
+    mc.click()
+    mc.wait(1)
 
 def main():
     Automation.loop("Autoclick", autoclick)
