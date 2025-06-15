@@ -37,7 +37,7 @@ def create_automation(automation_name: str, automation_type: str):
     """
     filename = f"automations/{automation_name}.a.py"
     content = (f"""# Automation: {automation_name}
-from src.mouse_controller import MouseController
+from src.mouse_controller import MouseController as mc
 from src.automation import Automation
 from src.point import Point
 
