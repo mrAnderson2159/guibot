@@ -7,7 +7,7 @@
 # se powershell non lo esegue attiva i permessi con
 # Set-ExecutionPolicy RemoteSigned -Scope Process
 
-Write-Host "Inizio setup del progetto Python..." -ForegroundColor Cyan
+Write-Host "Inizio setup del progetto Guibot..." -ForegroundColor Cyan
 
 # Controllo se Python è installato
 $pythonPath = Get-Command python -ErrorAction SilentlyContinue
@@ -75,5 +75,16 @@ if ($?) {
     Write-Host "OK"
 } else {
     Write-Host "Errore nell'installazione delle dipendenze."
+    exit 1
+}
+
+
+# Impostazione PYTHONPATH per permettere import di src.*
+Write-Host "Impostazione PYTHONPATH... " -NoNewline
+$env:PYTHONPATH = (Get-Location).Path
+if ($env:PYTHONPATH) {
+    Write-Host "OK"
+} else {
+    Write-Host "Errore nella definizione del PYTHONPATH."
     exit 1
 }
