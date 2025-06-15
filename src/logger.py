@@ -29,6 +29,7 @@ if isinstance(logging_level, int):
 def get_logger(name: str) -> logging.Logger:
     """
     Get a logger with the specified name.
+
     :param name: Name of the logger.
     :return: Configured logger instance.
     """

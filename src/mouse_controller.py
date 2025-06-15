@@ -15,6 +15,7 @@ class MouseController:
     def wait(time: Union[Interval, float]):
         """
         Wait for a specified interval.
+
         :param time: Interval to wait.
         """
         if isinstance(time, Interval):
@@ -58,6 +59,7 @@ class MouseController:
     @classmethod
     def move_by_offset(cls, x: int, y: int, slowly: bool = False, elapsed_time: float = .8, definition: int = 80):
         """ Move the mouse of x and y pixels.
+
         :param x: Horizontal movement in pixels.
         :param y: Vertical movement in pixels.
         :param slowly: If True, it will be simulated the movement of the pointer
@@ -91,6 +93,7 @@ class MouseController:
     @classmethod
     def scroll(cls, x: int, y: int):
         """ Scroll the mouse wheel
+
         :param x: Horizontal scroll amount (positive for right, negative for left).
         :param y: Vertical scroll amount (positive for down, negative for up).
         """
@@ -101,6 +104,7 @@ class MouseController:
     @staticmethod
     def move_to(point: Point):
         """ Move the mouse to a specific point.
+
         :param point: Point to move the mouse to.
         """
         logger.info(f"Moving the mouse to point: {point}")
@@ -109,6 +113,7 @@ class MouseController:
     @classmethod
     def click_at(cls, point: Point, wait: float = 0.2):
         """ Click at a specific point.
+
         :param point: Point to click at.
         :param wait: Time to wait before clicking.
         """
@@ -120,6 +125,7 @@ class MouseController:
     @classmethod
     def drag_offset(cls, starting_point: Point, x: int, y: int, elapsed_time: float = .8, definition: int = 80):
         """ Drag the mouse from a starting point to a new position with a specified offset.
+
         :param starting_point: Point to start dragging from.
         :param x: Horizontal offset from the starting point.
         :param y: Vertical offset from the starting point.
@@ -135,6 +141,7 @@ class MouseController:
     @classmethod
     def drag_to(cls, starting_point: Point, target_point: Point, elapsed_time: float = .8, definition: int = 80):
         """ Drag the mouse from a starting point to a target point.
+
         :param starting_point: Point to start dragging from.
         :param target_point: Point to drag to.
         :param elapsed_time: Time in seconds to complete the drag.

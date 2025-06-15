@@ -6,6 +6,11 @@ from pathlib import Path
 import subprocess
 
 def open_with_vscode(file: str):
+    """
+    Open a file with Visual Studio Code based on the operating system.
+
+    :param file: Path to the file to be opened.
+    """
     system_platform = platform.system()
     filepath = Path(file).resolve()
 
@@ -41,7 +46,7 @@ def dummy_automation():
      pass
 
 def main():
-     Automation.{automation_type}("dummy_automation", dummy_automation, ...)
+     Automation.{automation_type}("dummy_automation", dummy_automation)
 
 if __name__ == "__main__":
      main()
