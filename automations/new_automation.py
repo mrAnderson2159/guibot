@@ -35,9 +35,9 @@ def create_automation(automation_name: str, automation_type: str):
     :param automation_name: Name of the new automation (without .py extension).
     :param automation_type: Type of automation (e.g., 'loop', 'keystroke').
     """
-    filename = f"automations/{automation_name}.py"
+    filename = f"automations/{automation_name}.a.py"
     content = (f"""# Automation: {automation_name}
-from src.mouse_controller import MouseController
+from src.mouse_controller import MouseController as mc
 from src.automation import Automation
 from src.point import Point
 
@@ -71,4 +71,4 @@ if __name__ == "__main__":
         exit(1)
 
     create_automation(automation_name, automation_type)
-    open_with_vscode(f"automations/{automation_name}.py")
+    open_with_vscode(f"automations/{automation_name}.a.py")
