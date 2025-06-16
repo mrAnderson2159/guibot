@@ -1,6 +1,4 @@
-from time import sleep
-from typing import Union
-
+from src.base_controller import BaseController
 from pynput.mouse import Button, Controller
 from src.point import Point
 from src.enums import Interval
@@ -10,28 +8,7 @@ logger = get_logger(__name__)
 mouse = Controller()
 
 
-class MouseController:
-    @staticmethod
-    def wait(time: Union[Interval, float]):
-        """
-        Wait for a specified interval.
-
-        :param time: Interval to wait.
-        """
-        if isinstance(time, Interval):
-            logger.info(f"Waiting for a {time.name} interval: {time.value} seconds.")
-            sleep(time.value)
-        elif isinstance(time, (int, float)):
-            if time > 0:
-                logger.info(f"Waiting for {time} seconds.")
-                sleep(time)
-            else:
-                logger.debug(f"Received non-positive wait time or zero: {time}. No waiting will occur.")
-        else:
-            message = f"Invalid type for time: {type(time)}. Must be Interval, int, or float."
-            logger.error(message)
-            raise TypeError(message)
-
+class MouseController(BaseController):
     @classmethod
     def press(cls):
         """ Press the left mouse button. """
@@ -84,7 +61,7 @@ class MouseController:
                 mouse.move(part_x, part_y)
                 logger.debug(f"Mouse position after move: {mouse.position}")
                 logger.debug(f"Sleeping for {elapsed_time / definition} seconds")
-                sleep(elapsed_time / definition)
+                cls.wait(elapsed_time / definition)
         else:
             cls.wait(Interval.SHORT)
             logger.info(f"Moving the mouse instantly to ({x}, {y}).")
