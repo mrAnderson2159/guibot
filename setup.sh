@@ -53,3 +53,14 @@ else
     echo "Errore nell'installazione delle dipendenze."
     exit 1
 fi
+
+# Assicura il riconoscimento del modulo src
+echo -n "Assicurando il riconoscimento del modulo src... "
+export PYTHONPATH=.
+
+if [ $? -eq 0 ]; then
+    echo "OK"
+else
+    echo "Errore nell'impostazione del PYTHONPATH."
+    exit 1
+fi
