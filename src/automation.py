@@ -1,29 +1,14 @@
-from pynput.keyboard import Key, Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
+from threading import Thread
+from src.keyboard_listener import KeyboardListener as kl
 from src.logger import get_logger
 
 logger = get_logger(__name__)
 
-def esc_exit(key, callback: callable = lambda: None, *args, **kwargs) -> bool:
-    """
-    Check if the pressed key is 'esc' and call the callback function if it is.
-
-    :param key: The key that was pressed.
-    :param callback: Function to call when 'esc' is pressed.
-    :param args: Additional arguments to pass to the callback function.
-    :param kwargs: Additional keyword arguments to pass to the callback function.
-    :return: True if the key is not 'esc', False otherwise.
-    If False is returned, the listener will stop. Else, it will continue listening.
-    """
-    if key == Key.esc:
-        callback(*args, **kwargs)
-        logger.info("Exiting with 'esc' keystroke.")
-        return False
-    return True
 
 class Automation:
     @staticmethod
-    def loop(name: str, automation_function: callable):
+    def loop(name: str, automation_function: callable, blocking: bool = True):
         """
         Start a keyboard listener that listens for the 'esc' key to exit the loop.
 
@@ -36,24 +21,35 @@ class Automation:
             nonlocal running
             running = False
 
-        def on_press(key):
-            return esc_exit(key, stop_running)
+        message = (f"Starting automation loop for '{name}'. "
+                   "Press 'esc' to stop the automation loop.")
+        print(message)
+        logger.info(message)
+        kl.exit_on_esc(stop_running)
 
-        KeyboardListener(on_press=on_press).start()
-        logger.info(f"Automation loop started for {name}. Press 'esc' to exit.")
-        print(f"Automation loop started for {name}. Press 'esc' to exit.")
+        def thread_body():
+            """
+            This function runs in a separate thread to allow the main thread to continue executing.
+            It will run the automation function repeatedly until the 'esc' key is pressed.
+            """
+            while running:
+                try:
+                    automation_function()
+                except KeyboardInterrupt:
+                    message = f"Automation {name} interrupted by user."
+                    print(message)
+                    logger.info(message)
+                    break
 
-        while running:
-            try:
-                automation_function()
-            except KeyboardInterrupt:
-                logger.info("Automation loop interrupted by user.")
-                print("Automation loop interrupted by user.")
-                break
+        thread = Thread(target=thread_body)
+        thread.start()
+
+        if blocking:
+            thread.join()
 
 
     @staticmethod
-    def keystroke(name: str, automation_function: callable, key_activator: str):
+    def keystroke(name: str, automation_function: callable, key_activator: str, blocking: bool = True):
         """
         Start a keyboard listener that listens for a specific key activator to trigger the automation function.
 
@@ -65,17 +61,12 @@ class Automation:
 
         intro = (f"Starting keystroke automation for '{name}' with activator '{key_activator}'. "
                  f"Press '{key_activator}' to activate the function or 'esc' to exit.")
-
         logger.info(intro)
         print(intro)
 
-        def on_press(key):
-            if hasattr(key, 'char') and key.char == key_activator:
-                logger.info(f"Activating automation function '{name}' with keystroke '{key_activator}'.")
-                automation_function()
-            return esc_exit(key)
+        listener = kl.listen_for_key_then(key_activator, automation_function)
 
-        with KeyboardListener(on_press=on_press) as listener:
+        if blocking:
             listener.join()
 
 
@@ -90,20 +81,14 @@ class Automation:
                 logger.info(f"Mouse clicked at {point}.")
                 print(f"Mouse clicked at {point}.")
 
-        def on_press(key):
-            return esc_exit(key)
-
         intro = ("Starting mouse listener to acquire points. "
                 "Click anywhere to log the mouse position or press 'esc' to exit.")
         logger.info(intro)
         print(intro)
 
-        mouse_listener = MouseListener(on_click=on_click)
-        mouse_listener.start()
+        ml = MouseListener(on_click=on_click)
+        ml.start()
 
-        keyboard_listener = KeyboardListener(on_press=on_press)
-        keyboard_listener.start()
-
-        keyboard_listener.join()
-        mouse_listener.stop()
-        mouse_listener.join()
+        kl.exit_on_esc().join()
+        ml.stop()
+        ml.join()

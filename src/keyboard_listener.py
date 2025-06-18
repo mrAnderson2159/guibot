@@ -1,10 +1,28 @@
 from typing import Union
 from pynput.keyboard import Key, Listener
 from src.logger import get_logger
+from time import sleep
+
 
 logger = get_logger(__name__)
 
 class KeyboardListener:
+    @staticmethod
+    def safe_start_listener(*args, **kwargs) -> Listener:
+        """ Start a keyboard listener with a slight delay to ensure safe synchronization of AXIsProcessTrusted.
+        This is useful to avoid issues with the listener starting before the system is ready.
+
+        :param args: Positional arguments to pass to the Listener.
+        :param kwargs: Keyword arguments to pass to the Listener.
+        :return: An instance of Listener that has been started.
+        """
+        syncro_time = 0.1  # seconds
+        logger.info(f"Starting listener with a synchronization delay of {syncro_time} seconds.")
+        sleep(syncro_time) # allow safe synchronization of AXIsProcessTrusted
+        listener = Listener(*args, **kwargs)
+        listener.start()
+        return listener
+
     @staticmethod
     def check_for_esc(key: Union[str, Key], callback: callable = lambda: None, *args, **kwargs) -> bool:
         """
@@ -19,12 +37,29 @@ class KeyboardListener:
         """
         if key == Key.esc:
             callback(*args, **kwargs)
-            logger.info("Exiting with 'esc' keystroke.")
+            message = "Exiting listener due to 'esc' keystroke."
+            logger.info(message)
             return False
         return True
 
     @classmethod
-    def listen_for_key_then(cls, key: Union[str, Key], callback: callable, *args, **kwargs):
+    def exit_on_esc(cls, callback: callable = lambda: None, *args, **kwargs) -> Listener:
+        """
+        Start a keyboard listener that exits when 'esc' is pressed and calls the callback function.
+
+        Note that this method will not block the main thread, allowing other operations to continue.
+
+        :param callback: Function to call when 'esc' is pressed.
+        :param args: Additional arguments to pass to the callback function.
+        :param kwargs: Additional keyword arguments to pass to the callback function.
+        """
+        def on_press(key: Union[str, Key]):
+            return cls.check_for_esc(key, callback, *args, **kwargs)
+
+        return cls.safe_start_listener(on_press=on_press)
+
+    @classmethod
+    def listen_for_key_then(cls, key: Union[str, Key], callback: callable, *args, **kwargs) -> Listener:
         """
         Start a keyboard listener that listens for a specific key to trigger the callback function.
         Use 'esc' to exit the listener.
@@ -41,6 +76,7 @@ class KeyboardListener:
             Callback function that is called when a key is pressed.
             It checks if the pressed key matches the specified key and calls the callback function if it does.
             It also checks for the 'esc' key to stop the listener.
+
             :param pressed_key: The key that was pressed.
             :return: True if the listener should continue, False if it should stop.
             """
@@ -60,10 +96,9 @@ class KeyboardListener:
             return cls.check_for_esc(pressed_key)
         
         message = f"Listening for key: {key}. Press it to trigger the callback. Press 'esc' to stop listening."
-        print(message)
         logger.info(message)
 
-        Listener(on_press=on_press).start()
+        return cls.safe_start_listener(on_press=on_press)
 
 if __name__ == "__main__":
     # Example for listening to a specific key
