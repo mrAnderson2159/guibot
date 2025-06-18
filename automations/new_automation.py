@@ -36,21 +36,40 @@ def create_automation(automation_name: str, automation_type: str):
     :param automation_type: Type of automation (e.g., 'loop', 'keystroke').
     """
     filename = f"automations/{automation_name}.a.py"
-    content = (f"""# Automation: {automation_name}
+    if automation_type == "loop":
+        content = f"""# Automation: {automation_name}
 from src.mouse_controller import MouseController as mc
 from src.automation import Automation
 from src.point import Point
 
-def dummy_automation():
-     # Your automation code here
-     pass
+def {automation_name}():
+    # Your automation code here
+    pass
 
 def main():
-     Automation.{automation_type}("dummy_automation", dummy_automation)
+    Automation.loop("{automation_name}", {automation_name})
 
 if __name__ == "__main__":
-     main()
-                """)
+    main()
+"""
+    elif automation_type == "keystroke":
+        content = f"""# Automation: {automation_name}
+from src.mouse_controller import MouseController as mc
+from src.keyboard_listener import KeyboardListener as kl
+from src.automation import Automation
+from src.point import Point
+
+def {automation_name}():
+    # Your automation code here
+    pass
+
+def main():
+    Automation.keystroke("{automation_name}", {automation_name}, key)
+
+if __name__ == "__main__":
+    main()
+"""
+
 
     if exists(filename):
         print(f"Automation '{automation_name}' already exists.")
