@@ -44,6 +44,26 @@ class MouseController(BaseController):
         mouse.click(Button.left)
 
     @classmethod
+    def double_click(cls, must_wait: bool = True):
+        """ Double click the left mouse button.
+
+        :param must_wait: If True, it will wait for a short interval before double clicking."""
+        if must_wait:
+            cls.wait(Interval.SHORT)
+        logger.info("Double clicking the left mouse button.")
+        mouse.click(Button.left, 2)
+
+    @classmethod
+    def right_click(cls, must_wait: bool = True):
+        """ Right click the mouse button.
+
+        :param must_wait: If True, it will wait for a short interval before right clicking."""
+        if must_wait:
+            cls.wait(Interval.SHORT)
+        logger.info("Right clicking the mouse button.")
+        mouse.click(Button.right)
+
+    @classmethod
     def move_by_offset(cls, x: int, y: int, slowly: bool = False, elapsed_time: float = .8, definition: int = 80):
         """ Move the mouse of x and y pixels.
 
@@ -108,6 +128,30 @@ class MouseController(BaseController):
         cls.move_to(point)
         cls.wait(wait)
         cls.click(must_wait=False)
+
+    @classmethod
+    def double_click_at(cls, point: Point, wait: float = 0.2):
+        """ Double click at a specific point.
+
+        :param point: Point to double click at.
+        :param wait: Time to wait before double clicking.
+        """
+        logger.info(f"Preparing to double click at: {point} in {wait} seconds.")
+        cls.move_to(point)
+        cls.wait(wait)
+        cls.double_click(must_wait=False)
+
+    @classmethod
+    def right_click_at(cls, point: Point, wait: float = 0.2):
+        """ Right click at a specific point.
+
+        :param point: Point to right click at.
+        :param wait: Time to wait before right clicking.
+        """
+        logger.info(f"Preparing to right click at: {point} in {wait} seconds.")
+        cls.move_to(point)
+        cls.wait(wait)
+        cls.right_click(must_wait=False)
 
     @classmethod
     def drag_offset(cls, starting_point: Point, x: int, y: int, elapsed_time: float = .8, definition: int = 80):
