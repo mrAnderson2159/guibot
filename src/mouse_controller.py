@@ -9,6 +9,16 @@ mouse = Controller()
 
 
 class MouseController(BaseController):
+    @staticmethod
+    def get_position() -> Point:
+        """ Get the current mouse position.
+
+        :return: Point representing the current mouse position.
+        """
+        position = mouse.position
+        logger.debug(f"Current mouse position: {position}")
+        return Point(*position)
+
     @classmethod
     def press(cls):
         """ Press the left mouse button. """
