@@ -54,7 +54,9 @@ if __name__ == "__main__":
 """
     elif automation_type == "keystroke":
         content = f"""# Automation: {automation_name}
+from pynput.keyboard import Key
 from src.mouse_controller import MouseController as mc
+from src.keyboard_controller import KeyboardController as kc
 from src.keyboard_listener import KeyboardListener as kl
 from src.automation import Automation
 from src.point import Point
@@ -64,6 +66,8 @@ def {automation_name}():
     pass
 
 def main():
+    # You can add multiple automations with different keys by using the keyword argument blocking=False
+    # for every automation but the last one.
     Automation.keystroke("{automation_name}", {automation_name}, key)
 
 if __name__ == "__main__":
