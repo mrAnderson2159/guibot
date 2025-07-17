@@ -116,6 +116,15 @@ class KeyboardController(BaseController):
         cls.release_key(Key.enter, must_wait)
 
     @classmethod
+    def delete(cls, must_wait: bool = True):
+        """ Press and release the Delete key.
+
+        :param must_wait: If True, it will wait for a short interval before pressing the key.
+        """
+        cls.press_key(Key.delete, must_wait)
+        cls.release_key(Key.delete, must_wait)
+
+    @classmethod
     def space(cls, must_wait: bool = True):
         """ Press and release the Space key.
 
