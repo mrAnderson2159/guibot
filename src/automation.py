@@ -1,4 +1,6 @@
 from pynput.mouse import Listener as MouseListener
+from pynput.keyboard import Key
+from typing import Union
 from threading import Thread
 from src.keyboard_listener import KeyboardListener as kl
 from src.logger import get_logger
@@ -49,22 +51,42 @@ class Automation:
 
 
     @staticmethod
-    def keystroke(name: str, automation_function: callable, key_activator: str, blocking: bool = True):
+    def keystroke(name: str, automation_function: callable, key_activator: Union[str, Key, list[Union[str, Key]]], blocking: bool = True):
         """
-        Start a keyboard listener that listens for a specific key activator to trigger the automation function.
+        Start a keyboard listener that listens for a specific key or combination of keys to activate the automation
 
         :param name: Name of the automation process.
-        :param automation_function: Function to be executed when the key activator is pressed.
-        :param key_activator: Single character string that activates the automation function.
+        :param automation_function: Function to be executed when the key is pressed.
+        :param key_activator: A single character string, a Key, or a list of strings or Keys that will activate the automation function.
+        :param blocking: If True, the listener will block the main thread until it is stopped. If False, it will run in the background
+        and allow the main thread to continue executing.
         """
-        assert isinstance(key_activator, str) and len(key_activator) == 1, "Key activator must be a single character string."
+        assert isinstance(key_activator, Key) \
+            or isinstance(key_activator, str) and len(key_activator) == 1 \
+            or (isinstance(key_activator, list) and all(isinstance(k, (str, Key)) for k in key_activator)), \
+            "key_activator must be a single character string, a Key, or a list of strings or Keys."
 
-        intro = (f"Starting keystroke automation for '{name}' with activator '{key_activator}'. "
-                 f"Press '{key_activator}' to activate the function or 'esc' to exit.")
-        logger.info(intro)
-        print(intro)
+        listener = None
 
-        listener = kl.listen_for_key_then(key_activator, automation_function)
+        if isinstance(key_activator, list):
+            key_activator = [(k.name if hasattr(k, 'name') else k.char) if isinstance(k, Key) else k for k in key_activator]
+            hotkeys = "+".join(key_activator)
+
+            intro = (f"Starting keystroke automation for '{name}' with hotkeys '{hotkeys}'. "
+                     f"Press '{hotkeys}' to activate the function or 'esc' to exit.")
+            logger.info(intro)
+            print(intro)
+
+            listener = kl.listen_for_hotkeys_then(key_activator, automation_function)
+        else:
+            key_name = key_activator if isinstance(key_activator, str) else key_activator.name
+
+            intro = (f"Starting keystroke automation for '{name}' with activator '{key_name}'. "
+                    f"Press '{key_name}' to activate the function or 'esc' to exit.")
+            logger.info(intro)
+            print(intro)
+
+            listener = kl.listen_for_key_then(key_activator, automation_function)
 
         if blocking:
             listener.join()
