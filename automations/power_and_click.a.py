@@ -4,6 +4,7 @@ from src.automation import Automation
 from src.point import Point
 from src.logger import get_logger
 from collections.abc import Callable
+from typing import Literal
 
 logger = get_logger(__name__)
 
@@ -11,6 +12,7 @@ long_wait = 21.5
 offset = 0.25
 
 def power_and_click():
+    """Automation"""
     charge = Point(109, 73)
     download = Point(66, 73)
 
@@ -18,7 +20,7 @@ def power_and_click():
     mc.click_at(download, 1)
     mc.click_at(charge, long_wait)
 
-def get_offset(sign: int) -> Callable[[], float]:
+def get_offset(sign: Literal[1, -1]) -> Callable[[], float]:
     def offset_getter() -> float:
         return offset * sign
     return offset_getter
