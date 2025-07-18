@@ -39,6 +39,9 @@ def create_automation(automation_name: str, automation_type: str):
     if automation_type == "loop":
         content = f"""# Automation: {automation_name}
 from src.mouse_controller import MouseController as mc
+from src.keyboard_controller import KeyboardController as kc
+from src.keyboard_listener import KeyboardListener as kl
+from src.clipboard import Clipboard as cb
 from src.automation import Automation
 from src.point import Point
 
@@ -58,6 +61,7 @@ from pynput.keyboard import Key
 from src.mouse_controller import MouseController as mc
 from src.keyboard_controller import KeyboardController as kc
 from src.keyboard_listener import KeyboardListener as kl
+from src.clipboard import Clipboard as cb
 from src.automation import Automation
 from src.point import Point
 
