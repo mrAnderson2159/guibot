@@ -37,8 +37,16 @@ def set_points():
         print("Click to set points for: " + ", ".join(points_to_set))
         listener.join()
 
+def program_psoc():
+    start = global_points["psoc"]
+    if start is None:
+        print("Error: 'psoc' point not set. Please set the points first.")
+        return
+    mc.click_at(start)
 
-def coll_io():
+def enter_utech():
+    mc.click_at(global_points["serial_terminal"])
+    mc.wait(0.5)
     kc.typewrite("UTECH")
     kc.enter()
 
@@ -46,7 +54,8 @@ def main():
     # You can add multiple automations with different keys by using the keyword argument blocking=False
     # for every automation but the last one.
     Automation.keystroke("set_points", set_points, 's', blocking=False)
-    Automation.keystroke("coll_io", coll_io, Key.f1)
+    Automation.keystroke("program_psoc", program_psoc, 'z', blocking=False)
+    Automation.keystroke("enter_utech", enter_utech, 'x')
 
 if __name__ == "__main__":
     main()
