@@ -9,9 +9,10 @@ from src.automation import Automation
 from src.point import Point
 from time import sleep
 
+
 global_points: dict[str, Point] = {
-    "psoc": None,
-    "serial_terminal": None
+    "psoc": Point(80, 80),
+    "serial_terminal": Point(1100, 100),
 }
 
 def set_points():
@@ -37,6 +38,7 @@ def set_points():
         print("Click to set points for: " + ", ".join(points_to_set))
         listener.join()
 
+
 def program_psoc():
     start = global_points["psoc"]
     if start is None:
@@ -45,14 +47,16 @@ def program_psoc():
     mc.click_at(start)
 
 def enter_utech():
-    mc.click_at(global_points["serial_terminal"])
+    serial_terminal = global_points["serial_terminal"]
+    mc.click_at(serial_terminal)
     mc.wait(0.5)
     kc.typewrite("UTECH")
     kc.enter()
+    mc.click_at(serial_terminal + Point(0, 100))
 
 def main():
     # You can add multiple automations with different keys by using the keyword argument blocking=False
-    # for every automation but the last one.
+    # for every automation but the last one.z
     Automation.keystroke("set_points", set_points, 's', blocking=False)
     Automation.keystroke("program_psoc", program_psoc, 'z', blocking=False)
     Automation.keystroke("enter_utech", enter_utech, 'x')
