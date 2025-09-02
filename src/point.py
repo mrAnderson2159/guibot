@@ -30,3 +30,18 @@ class Point:
 
     def __repr__(self):
         return f"Point({{x: {self.x}, y: {self.y}}})"
+
+    def __add__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return Point(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, scalar: float):
+        if not isinstance(scalar, (int, float)):
+            return NotImplemented
+        return Point(self.x * scalar, self.y * scalar)
