@@ -88,3 +88,12 @@ if ($env:PYTHONPATH) {
     Write-Host "Errore nella definizione del PYTHONPATH."
     exit 1
 }
+
+
+# Setup completato
+Write-Host "Setup completato!" -ForegroundColor Cyan
+Write-Host "Se però l'ambiente virtuale non è stato attivato o se il modulo 'src' non viene riconosciuto," -ForegroundColor Yellow
+Write-Host "esegui manualmente i seguenti comandi:" -ForegroundColor Yellow
+Write-Host ""
+Write-Host ". .\venv\Scripts\Activate.ps1" -ForegroundColor Green
+Write-Host '$env:PYTHONPATH = (Get-Location).Path' -ForegroundColor Green

@@ -97,5 +97,7 @@ else
 fi
 
 
-echo -e "\nSetup completato. Ora attiva il venv locale con:\x1b[0m"
+echo -e "\nSetup completato. Ora attiva il venv locale con e il PYTHONPATH:"
 echo -e "\t\x1b[36msource venv/bin/activate\n"
+echo -e "\t\x1b[36mexport PYTHONPATH=.\n"
+echo -e "\x1b[0m"
