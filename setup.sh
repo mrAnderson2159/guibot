@@ -85,19 +85,58 @@ else
     exit 1
 fi
 
-# Assicura il riconoscimento del modulo src
-echo -n "Assicurando il riconoscimento del modulo src... "
-export PYTHONPATH=.
+# Controllo tkinter a seconda del sistema operativo
+echo -n "Controllo tkinter... "
 
-if [ $? -eq 0 ]; then
-    echo "OK"
-else
-    echo "Errore nell'impostazione del PYTHONPATH."
-    exit 1
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    python3 -c "import tkinter" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "mancante"
+        echo "Installazione python3-tk in corso..."
+        sudo apt update && sudo apt install -y python3-tk || {
+            echo "Errore nell'installazione di python3-tk"
+            exit 1
+        }
+    else
+        echo "OK"
+    fi
+
+elif [[ "$OSTYPE" == "darwin"* ]]; then # TODO: test su MacOS
+    python3 -c "import tkinter" >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "mancante"
+        echo -n "Controllo che homebrew sia installato..."
+
+        if ! command -v brew &> /dev/null; then
+            echo "mancante"
+            echo "Homebrew non è installato. Installalo da https://brew.sh/"
+            exit 1
+        fi
+
+        echo "OK"
+        echo "Installazione python-tk in corso..."
+        brew install python-tk || {
+            echo "Errore nell'installazione di python-tk"
+            exit 1
+        }
+    else
+        echo "OK"
+    fi
 fi
 
 
-echo -e "\nSetup completato. Ora attiva il venv locale con e il PYTHONPATH:"
-echo -e "\t\x1b[36msource venv/bin/activate\n"
-echo -e "\t\x1b[36mexport PYTHONPATH=.\n"
-echo -e "\x1b[0m"
+# Assicura il riconoscimento del modulo src
+# echo -n "Assicurando il riconoscimento del modulo src... "
+# export PYTHONPATH=.
+
+# if [ $? -eq 0 ]; then
+#     echo "OK"
+# else
+#     echo "Errore nell'impostazione del PYTHONPATH."
+#     exit 1
+# fi
+
+
+echo -e "\nSetup completato.\nOra attiva il venv locale e il PYTHONPATH per il riconoscimento di 'src':"
+echo -e "\t\x1b[36msource venv/bin/activate"
+echo -e "\t\x1b[36mexport PYTHONPATH=.\x1b[0m\n"

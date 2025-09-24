@@ -78,6 +78,18 @@ if ($?) {
     exit 1
 }
 
+# Controllo tkinter
+Write-Host "Controllo tkinter... " -NoNewline # TODO: testare su windows
+python -c "import tkinter" 2>$null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "OK"
+} else {
+    Write-Host "mancante" -ForegroundColor Red
+    Write-Host "Su Windows tkinter dovrebbe essere incluso di default." -ForegroundColor Yellow
+    Write-Host "Se manca, reinstalla Python assicurandoti di includere Tcl/Tk (spunta 'tcl/tk and IDLE' nell'installer)." -ForegroundColor Yellow
+    exit 1
+}
+
 
 # Impostazione PYTHONPATH per permettere import di src.*
 Write-Host "Impostazione PYTHONPATH... " -NoNewline
