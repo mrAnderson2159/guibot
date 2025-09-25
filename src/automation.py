@@ -1,10 +1,11 @@
 from pynput.mouse import Listener as MouseListener
 from pynput.keyboard import Key
-from typing import Union
+from typing import Union, Optional
 from threading import Thread
 from enum import Enum
 from src.keyboard_listener import KeyboardListener as kl
 from src.logger import get_logger
+from src.window import Window
 
 logger = get_logger(__name__)
 
@@ -185,33 +186,65 @@ class Automation:
 
     @classmethod
     @_is_allowed(lambda cls: True, "It's always allowed.")
-    def acquire_clicks(cls):
+    def acquire_clicks(cls, *, use_window: bool = True):
         """
         Start a mouse listener that logs the position of the mouse when clicked.
         """
-        def on_click(x, y, button, pressed):
-            if pressed:
-                point = (x, y)
-                logger.info(f"Mouse clicked at {point}.")
-                print(f"Mouse clicked at {point}.")
+        if use_window:
+            last_point: Optional[tuple[int, int]] = None
 
-        intro = ("Starting mouse listener to acquire points. "
-                "Click anywhere to log the mouse position or press 'esc' to exit.")
-        logger.info(intro)
-        print(intro)
+            def on_click(x, y, button, pressed):
+                nonlocal last_point
+                if pressed:
+                    last_point = (x, y)
+                    logger.debug(f"Mouse clicked at {last_point}.")
+                    return False  # Stop listener
 
-        ml = MouseListener(on_click=on_click)
-        ml.start()
 
-        cls.__att = AutomationMode.CLICK
-        cls.__aptc += 1
-        logger.debug(f"Active thread type set to {cls.__att}. Active parallel thread count: {cls.__aptc}.")
+            while True:
+                point_name = Window().prompt(
+                    "Acquire Point",
+                    "Enter a name for a point then click on 'Acquire' or press 'Enter' to acquire it.\nPress 'Stop' to quit the acquisition.",
+                    none_btn_name="Stop",
+                    enter_btn_name="Acquire"
+                )
+                logger.debug(f"Point name entered: {point_name}. Point name is {'not ' if point_name is not None else ''}None.")
 
-        kl.exit_on_esc().join()
-        ml.stop()
-        ml.join()
+                if point_name is None:
+                    break
 
-        if cls.get_active_thread_type() == AutomationMode.CLICK:
-            cls.__att = AutomationMode.NONE
-        cls.__aptc -= 1
-        logger.debug(f"Active thread type set to {cls.__att}. Active parallel thread count: {cls.__aptc}.")
+                with MouseListener(on_click=on_click) as ml:
+                    ml.join()
+
+                if last_point is not None:
+                    print(f"{point_name} = Point({last_point[0]}, {last_point[1]})")
+                else:
+                    raise RuntimeError("Failed to acquire point.")
+
+        else:
+            def on_click(x, y, button, pressed):
+                if pressed:
+                    point = (x, y)
+                    logger.info(f"Mouse clicked at {point}.")
+                    print(f"Mouse clicked at {point}.")
+
+            intro = ("Starting mouse listener to acquire points. "
+                    "Click anywhere to log the mouse position or press 'esc' to exit.")
+            logger.info(intro)
+            print(intro)
+
+            ml = MouseListener(on_click=on_click)
+            ml.start()
+
+            cls.__att = AutomationMode.CLICK
+            cls.__aptc += 1
+            logger.debug(f"Active thread type set to {cls.__att}. Active parallel thread count: {cls.__aptc}.")
+
+            kl.exit_on_esc().join()
+            ml.stop()
+            ml.join()
+
+            if cls.get_active_thread_type() == AutomationMode.CLICK:
+                cls.__att = AutomationMode.NONE
+            cls.__aptc -= 1
+            logger.debug(f"Active thread type set to {cls.__att}. Active parallel thread count: {cls.__aptc}.")
