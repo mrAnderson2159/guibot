@@ -11,6 +11,7 @@ left_bridge = Point(100, 100)
 central_bridge = Point(700, 150)
 right_bridge = Point(1595, 265)
 bottom = Point(1066, 1066)
+power = None # TODO: Add the Point(x, y) of PSoC power button here
 
 
 def bridge(entry_point: Point):
@@ -21,11 +22,12 @@ def bridge(entry_point: Point):
     kc.wait(.5)
     kc.enter(must_wait=False)
     kc.wait(.5)
-    kc.typewrite("******") # insert the root password here
+    kc.typewrite("******") # TODO: insert the root password here
     kc.enter(must_wait=False)
     kc.wait(7)
     kc.typewrite("flash-nand")
     kc.enter(must_wait=False)
+    mc.click_at(bottom)
 
 def poweroff():
     kc.enter()
@@ -34,6 +36,10 @@ def poweroff():
     kc.enter(must_wait=False)
     mc.click_at(bottom)
 
+def start_programming_PSoC():
+    # TODO: First update the power Point above
+    mc.click_at(power)
+    mc.click_at(bottom)
 
 def main():
     # You can add multiple automations with different keys by using the keyword argument blocking=False
@@ -41,7 +47,8 @@ def main():
     Automation.keystroke("type poweroff", poweroff, Key.f1, blocking=False)
     Automation.keystroke("left bridge", lambda: bridge(left_bridge), Key.f10, blocking=False)
     Automation.keystroke("central bridge", lambda: bridge(central_bridge), Key.f11, blocking=False)
-    Automation.keystroke("right bridge", lambda: bridge(right_bridge), Key.f12)
+    Automation.keystroke("right bridge", lambda: bridge(right_bridge), Key.f12, blocking=False)
+    Automation.keystroke("program bridge", start_programming_PSoC, 'z')
 
 
 if __name__ == "__main__":
