@@ -6,6 +6,7 @@ from src.keyboard_listener import KeyboardListener as kl
 from src.clipboard import Clipboard as cb
 from src.automation import Automation
 from src.point import Point
+from typing import Optional
 
 left_bridge = Point(100, 100)
 central_bridge = Point(700, 150)
@@ -29,7 +30,10 @@ def bridge(entry_point: Point):
     kc.enter(must_wait=False)
     mc.click_at(bottom)
 
-def poweroff():
+def poweroff(on_bridge: Optional[Point] = None):
+    if on_bridge is not None:
+        mc.click_at(bottom)
+        mc.click_at(on_bridge)
     kc.enter()
     kc.wait(1)
     kc.typewrite("poweroff")
@@ -44,11 +48,13 @@ def start_programming_PSoC():
 def main():
     # You can add multiple automations with different keys by using the keyword argument blocking=False
     # for every automation but the last one.
-    Automation.keystroke("type poweroff", poweroff, Key.f1, blocking=False)
+    Automation.keystroke("type poweroff on left bridge", lambda: poweroff(left_bridge), 'j', blocking=False)
+    Automation.keystroke("type poweroff on central bridge", lambda: poweroff(central_bridge), 'k', blocking=False)
+    Automation.keystroke("type poweroff on right bridge", lambda: poweroff(right_bridge), 'l', blocking=False)
     Automation.keystroke("left bridge", lambda: bridge(left_bridge), Key.f10, blocking=False)
     Automation.keystroke("central bridge", lambda: bridge(central_bridge), Key.f11, blocking=False)
     Automation.keystroke("right bridge", lambda: bridge(right_bridge), Key.f12, blocking=False)
-    Automation.keystroke("program bridge", start_programming_PSoC, 'z')
+    Automation.keystroke("program bridge", start_programming_PSoC, '0')
 
 
 if __name__ == "__main__":
